@@ -19,7 +19,7 @@ Returns a list of server nodes
     "peers": [
         {
             "type": "beacon",
-            "url": "http://dude.org"
+            "url": "http://ga4gh.org"
         },
         {
             "type": "ga4gh",
