@@ -15,7 +15,7 @@ apply plugin: 'eclipse'
 apply plugin: 'spring-boot'
 
 jar {
-	baseName = 'genomeserviceskb'
+	baseName = 'ga4gh-registry'
 	version = '0.0.1-SNAPSHOT'
 }
 sourceCompatibility = 1.8

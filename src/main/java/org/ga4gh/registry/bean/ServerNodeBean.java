@@ -5,6 +5,8 @@ import org.ga4gh.registry.util.RegistryConstants;
 
 /**
  * Bean class to encapsulate the server settings
+ * <br/>
+ * Tried using Jackson json serialization, but didn't like cryptic error messages, so went with manual parsing. Keeping annotations anyway just in case
  *
  * Created by mduby on 4/5/17.
  */

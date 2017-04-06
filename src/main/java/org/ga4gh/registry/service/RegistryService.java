@@ -25,11 +25,17 @@ public class RegistryService {
     // instance variables
     private final Logger serviceLog = Logger.getLogger(this.getClass().getName());
 
+    // state needed here, so singleton necessary
     @Autowired
     SimpleRegistryDAO simpleRegistryDAO;
 
+    // autowired just to keep from receretig it every request; no state necessary
     @Autowired
     RegistryJsonParser registryJsonParser;
+
+    // autowired just to keep from receretig it every request; no state necessary
+    @Autowired
+    RegistryJsonBuilder registryJsonBuilder;
 
     /**
      * returns a list of peers, filtered by type if the type parameter is not null; will return all types otherwise
@@ -53,8 +59,7 @@ public class RegistryService {
             }
 
             // get the json list
-            RegistryJsonBuilder jsonBuilder = new RegistryJsonBuilder();
-            resultObject = jsonBuilder.buildListOfPeers(serverNodeBeanList);
+            resultObject = this.registryJsonBuilder.buildListOfPeers(serverNodeBeanList);
 
         } catch (RegistryException exception) {
             resultObject = this.buildErrorObject(exception);
