@@ -10,6 +10,7 @@
 # APIs:
 ## /peers GET
 returns a list of server nodes
+
 **Example output**
 ```json
 {
