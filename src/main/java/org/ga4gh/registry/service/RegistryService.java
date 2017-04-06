@@ -28,6 +28,9 @@ public class RegistryService {
     @Autowired
     SimpleRegistryDAO simpleRegistryDAO;
 
+    @Autowired
+    RegistryJsonParser registryJsonParser;
+
     /**
      * returns a list of peers, filtered by type if the type parameter is not null; will return all types otherwise
      *
@@ -96,15 +99,44 @@ public class RegistryService {
         // local variables
         JsonObject resultObject = null;
         ServerNodeBean serverNodeBean = null;
-        RegistryJsonParser registryJsonParser = new RegistryJsonParser();
 
         // call the DAO
         try {
             // get the server node from the json
-            serverNodeBean = registryJsonParser.parseJsonString(jsonString);
+            serverNodeBean = this.registryJsonParser.parseJsonString(jsonString);
 
             // add the server node
             resultObject = this.addServerNode(serverNodeBean);
+
+        } catch (RegistryException exception) {
+            resultObject = this.buildErrorObject(exception);
+        }
+
+        // if works, return success
+        return resultObject;
+    }
+
+    /**
+     * update a server node from a json string
+     *
+     * @param jsonString
+     * @return
+     */
+    public JsonObject updateServerNodeFromJsonString(String jsonString) {
+        // local variables
+        JsonObject resultObject = null;
+        ServerNodeBean serverNodeBean = null;
+
+        // call the DAO
+        try {
+            // get the server node from the json
+            serverNodeBean = this.registryJsonParser.parseJsonString(jsonString);
+
+            // update the server node
+            this.simpleRegistryDAO.updateServerNode(serverNodeBean);
+
+            // if success
+            resultObject = this.buildSuccessObject("updated server node with url: " + serverNodeBean.getUrl());
 
         } catch (RegistryException exception) {
             resultObject = this.buildErrorObject(exception);

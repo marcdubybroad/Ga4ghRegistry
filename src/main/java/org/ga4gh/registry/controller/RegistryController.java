@@ -52,7 +52,7 @@ public class RegistryController {
      * @return
      */
     @RequestMapping(value = "/peers", method = RequestMethod.POST, produces = "application/json")
-    public String geneInfo(@RequestBody String inputString) {
+    public String addServerNode(@RequestBody String inputString) {
         JsonObject resultObject = null;
 
         // log
@@ -64,4 +64,25 @@ public class RegistryController {
         // return
         return resultObject.toString();
     }
+
+    /**
+     * services the /peers GET POST call
+     *
+     * @param inputString
+     * @return
+     */
+    @RequestMapping(value = "/peers", method = RequestMethod.PUT, produces = "application/json")
+    public String updateServerNode(@RequestBody String inputString) {
+        JsonObject resultObject = null;
+
+        // log
+        this.controllerLog.info("Got /peers PUT input server node with json: " + inputString);
+
+        // get the result object
+        resultObject = this.registryService.updateServerNodeFromJsonString(inputString);
+
+        // return
+        return resultObject.toString();
+    }
+
 }

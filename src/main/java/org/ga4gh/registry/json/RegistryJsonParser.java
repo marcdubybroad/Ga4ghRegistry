@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.util.RegistryConstants;
 import org.ga4gh.registry.util.RegistryException;
+import org.springframework.stereotype.Component;
 
 import javax.json.Json;
 import javax.json.JsonObject;
@@ -16,6 +17,7 @@ import java.io.StringReader;
  *
  * Created by mduby on 4/5/17.
  */
+@Component
 public class RegistryJsonParser {
     // instance variables
     private final Logger parserLog = Logger.getLogger(this.getClass().getName());
