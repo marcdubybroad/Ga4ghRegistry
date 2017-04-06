@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.datastore.simple.SimpleRegistryDAO;
 import org.ga4gh.registry.json.RegistryJsonBuilder;
+import org.ga4gh.registry.json.RegistryJsonParser;
 import org.ga4gh.registry.util.RegistryConstants;
 import org.ga4gh.registry.util.RegistryException;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,6 +77,34 @@ public class RegistryService {
 
             // if success
             resultObject = this.buildSuccessObject("created server node with url: " + serverNodeBean.getUrl());
+
+        } catch (RegistryException exception) {
+            resultObject = this.buildErrorObject(exception);
+        }
+
+        // if works, return success
+        return resultObject;
+    }
+
+    /**
+     * add a server node from a json string
+     *
+     * @param jsonString
+     * @return
+     */
+    public JsonObject addServerNodeFromJsonString(String jsonString) {
+        // local variables
+        JsonObject resultObject = null;
+        ServerNodeBean serverNodeBean = null;
+        RegistryJsonParser registryJsonParser = new RegistryJsonParser();
+
+        // call the DAO
+        try {
+            // get the server node from the json
+            serverNodeBean = registryJsonParser.parseJsonString(jsonString);
+
+            // add the server node
+            resultObject = this.addServerNode(serverNodeBean);
 
         } catch (RegistryException exception) {
             resultObject = this.buildErrorObject(exception);

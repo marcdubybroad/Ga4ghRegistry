@@ -1,7 +1,6 @@
 package org.ga4gh.registry.controller;
 
 import org.apache.log4j.Logger;
-import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.service.RegistryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -49,18 +48,18 @@ public class RegistryController {
     /**
      * services the /peers GET POST call
      *
-     * @param serverNodeBean
+     * @param inputString
      * @return
      */
     @RequestMapping(value = "/peers", method = RequestMethod.POST, produces = "application/json")
-    public String geneInfo(@RequestBody ServerNodeBean serverNodeBean) {
+    public String geneInfo(@RequestBody String inputString) {
         JsonObject resultObject = null;
 
         // log
-        this.controllerLog.info("Got /peers POST input server node with url: " + serverNodeBean.getUrl());
+        this.controllerLog.info("Got /peers POST input server node with json: " + inputString);
 
         // get the result object
-        resultObject = this.registryService.addServerNode(serverNodeBean);
+        resultObject = this.registryService.addServerNodeFromJsonString(inputString);
 
         // return
         return resultObject.toString();

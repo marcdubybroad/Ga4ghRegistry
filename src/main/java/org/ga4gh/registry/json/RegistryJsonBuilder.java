@@ -1,5 +1,6 @@
 package org.ga4gh.registry.json;
 
+import org.apache.log4j.Logger;
 import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.util.RegistryConstants;
 import org.ga4gh.registry.util.RegistryException;
@@ -17,6 +18,8 @@ import java.util.List;
  * Created by mduby on 4/5/17.
  */
 public class RegistryJsonBuilder {
+    // instance variables
+    private final Logger builderLog = Logger.getLogger(this.getClass().getName());
 
     /**
      * builds a json object of the server node
