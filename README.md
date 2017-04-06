@@ -9,7 +9,7 @@
  
 # APIs:
 ## /peers GET
-returns a list of server nodes
+Returns a list of server nodes
 
 **Example output**
 ```json
@@ -27,4 +27,27 @@ returns a list of server nodes
 }
 ```
  
+## /peers POST
+To add a new server node
+
+**Example input**
+```json
+{"url": "http://ga4gh.org", "type": "beacon"}
+```
  
+## /peers PUT
+To update an existing server node
+
+**Example input**
+```json
+{"url": "http://ga4gh.org", "type": "matchmaker"}
+```
+ 
+## /peers DELETE
+To delete an existing server node
+
+**Example input**
+```json
+{"url": "http://ga4gh.org", "type": "beacon"}
+```
+  
