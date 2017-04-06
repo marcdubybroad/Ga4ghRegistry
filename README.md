@@ -6,6 +6,8 @@
  - Make sure you have [Gradle](https://gradle.org/downloads). Use version 1.10 for now
  - Run *gradle build*
  - Then issue the command *java -jar build/libs/ga4gh-registry-0.0.1-SNAPSHOT.jar*
+ - the server will run on port 8090, under the context root *registry*
+   - http://localhost:8090/registry/peers
  
 # APIs:
 ## /peers GET
