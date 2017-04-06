@@ -1,5 +1,8 @@
 package org.ga4gh.registry.util;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Constants class to centrally hold all constant values
  *
@@ -16,6 +19,11 @@ public class RegistryConstants {
         public static final String VALUE                    = "value";
         public static final String NAME                     = "name";
         public static final String VERSION                  = "version";
+
+        public static final String TYPE                     = "type";
+        public static final String URL                      = "url";
+        public static final String PARENT                   = "parent";
+        public static final String PEERS                    = "peers";
     }
 
     public static final class Lookup {
@@ -30,5 +38,7 @@ public class RegistryConstants {
         public static final String BEACON                   = "beacon";
         public static final String REGISTRY                 = "regsitry";
         public static final String GA4GH                    = "ga4gh";
+
+        public static final List<String> TYPE_LIST          = Arrays.asList(MATCHMAKER, BEACON, REGISTRY, GA4GH);
     }
 }
