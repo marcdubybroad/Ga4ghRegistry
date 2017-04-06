@@ -147,6 +147,36 @@ public class RegistryService {
     }
 
     /**
+     * delete a server node from a json string
+     *
+     * @param jsonString
+     * @return
+     */
+    public JsonObject deleteServerNodeFromJsonString(String jsonString) {
+        // local variables
+        JsonObject resultObject = null;
+        ServerNodeBean serverNodeBean = null;
+
+        // call the DAO
+        try {
+            // get the server node from the json
+            serverNodeBean = this.registryJsonParser.parseJsonString(jsonString);
+
+            // update the server node
+            this.simpleRegistryDAO.deleteServerNode(serverNodeBean);
+
+            // if success
+            resultObject = this.buildSuccessObject("deleted server node with url: " + serverNodeBean.getUrl());
+
+        } catch (RegistryException exception) {
+            resultObject = this.buildErrorObject(exception);
+        }
+
+        // if works, return success
+        return resultObject;
+    }
+
+    /**
      * build a success message for updating requests
      *
      * @param message

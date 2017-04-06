@@ -115,7 +115,7 @@ public class SimpleRegistryDAO implements RegistryDAO {
         }
 
         // add to the map
-        this.serverMap.put(serverNodeBean.getUrl(), serverNodeBean);
+        this.serverMap.remove(serverNodeBean.getUrl());
     }
 
     /**
