@@ -26,17 +26,10 @@ public class RegistryConstants {
         public static final String PEERS                    = "peers";
     }
 
-    public static final class Lookup {
-        public static final String ANONYMOUS_EMAIL          = "anonymous@broadinstitute.org";
-
-        public static final int ENTITY_TYPE_ID_DATASET      = 1;
-        public static final int ENTITY_TYPE_ID_EXPERIMENT   = 2;
-    }
-
     public static final class RegistryType {
         public static final String MATCHMAKER               = "matchmaker";
         public static final String BEACON                   = "beacon";
-        public static final String REGISTRY                 = "regsitry";
+        public static final String REGISTRY                 = "registry";
         public static final String GA4GH                    = "ga4gh";
 
         public static final List<String> TYPE_LIST          = Arrays.asList(MATCHMAKER, BEACON, REGISTRY, GA4GH);
