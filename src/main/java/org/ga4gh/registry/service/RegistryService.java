@@ -2,7 +2,7 @@ package org.ga4gh.registry.service;
 
 import org.apache.log4j.Logger;
 import org.ga4gh.registry.bean.ServerNodeBean;
-import org.ga4gh.registry.datastore.simple.SimpleRegistryDAO;
+import org.ga4gh.registry.datastore.jpa.JpaRegistryDAO;
 import org.ga4gh.registry.json.RegistryJsonBuilder;
 import org.ga4gh.registry.json.RegistryJsonParser;
 import org.ga4gh.registry.util.RegistryConstants;
@@ -27,7 +27,8 @@ public class RegistryService {
 
     // state needed here, so singleton necessary
     @Autowired
-    SimpleRegistryDAO simpleRegistryDAO;
+//    SimpleRegistryDAO registryDAO;
+    JpaRegistryDAO registryDAO;
 
     // autowired just to keep from receretig it every request; no state necessary
     @Autowired
@@ -52,10 +53,10 @@ public class RegistryService {
         try {
             // if null type
             if (type == null) {
-                serverNodeBeanList = this.simpleRegistryDAO.getAllServerNodes();
+                serverNodeBeanList = this.registryDAO.getAllServerNodes();
 
             } else {
-                serverNodeBeanList = this.simpleRegistryDAO.getAllServerNodesOfType(type);
+                serverNodeBeanList = this.registryDAO.getAllServerNodesOfType(type);
             }
 
             // get the json list
@@ -81,7 +82,7 @@ public class RegistryService {
 
         // call the DAO
         try {
-            this.simpleRegistryDAO.addServerNode(serverNodeBean);
+            this.registryDAO.addServerNode(serverNodeBean);
 
             // if success
             resultObject = this.buildSuccessObject("created server node with url: " + serverNodeBean.getUrl());
@@ -138,7 +139,7 @@ public class RegistryService {
             serverNodeBean = this.registryJsonParser.parseJsonString(jsonString);
 
             // update the server node
-            this.simpleRegistryDAO.updateServerNode(serverNodeBean);
+            this.registryDAO.updateServerNode(serverNodeBean);
 
             // if success
             resultObject = this.buildSuccessObject("updated server node with url: " + serverNodeBean.getUrl());
@@ -168,7 +169,7 @@ public class RegistryService {
             serverNodeBean = this.registryJsonParser.parseJsonString(jsonString);
 
             // update the server node
-            this.simpleRegistryDAO.deleteServerNode(serverNodeBean);
+            this.registryDAO.deleteServerNode(serverNodeBean);
 
             // if success
             resultObject = this.buildSuccessObject("deleted server node with url: " + serverNodeBean.getUrl());
