@@ -5,6 +5,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import java.util.Date;
 
@@ -16,7 +17,7 @@ import java.util.Date;
  * Created by mduby on 4/5/17.
  */
 @Entity
-@Table(name = "registry_server_node")
+@Table(name = "registry_server_node", uniqueConstraints={@UniqueConstraint(columnNames={"url", "type"})})
 public class ServerNodeBean {
     // instance variables
     @Id
