@@ -89,9 +89,9 @@ public class JpaRegistryDAO implements RegistryDAO {
             this.registryRepository.save(serverNodeBean);
 
         } catch (DataIntegrityViolationException exception) {
-            String errorMessage = "Got new server node creation error due to duplicate url/type combination: " + exception.getMessage();
-            this.daoLog.error(errorMessage);
-            throw new RegistryException(errorMessage);
+            String message = "Server node with url: " + serverNodeBean.getUrl() + " already registered so cannot be created";
+            this.daoLog.error(message);
+            throw new RegistryException(message);
         }
     }
 
