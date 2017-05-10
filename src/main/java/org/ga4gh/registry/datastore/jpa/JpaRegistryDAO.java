@@ -21,6 +21,12 @@ public class JpaRegistryDAO implements RegistryDAO {
     @Autowired
     private RegistryRepository registryRepository;
 
+    /**
+     * list all the stored server nodes
+     *
+     * @return
+     * @throws RegistryException
+     */
     @Override
     public List<ServerNodeBean> getAllServerNodes() throws RegistryException {
         // local variables
@@ -39,14 +45,43 @@ public class JpaRegistryDAO implements RegistryDAO {
         return serverNodeBeanList;
     }
 
+    /**
+     * list all the server nodes of a given type
+     *
+     * @param type
+     * @return
+     * @throws RegistryException
+     */
     @Override
     public List<ServerNodeBean> getAllServerNodesOfType(String type) throws RegistryException {
-        return null;
+        // local variables
+        List<ServerNodeBean> serverNodeBeanList = new ArrayList<ServerNodeBean>();
+        Iterator<ServerNodeBean> serverNodeBeanIterator = null;
+
+        // get the iteratore from the repository
+        serverNodeBeanIterator = this.registryRepository.findAll().iterator();
+
+        // populate the list
+        while (serverNodeBeanIterator.hasNext()) {
+            ServerNodeBean serverNodeBean = serverNodeBeanIterator.next();
+            if (type.equalsIgnoreCase(serverNodeBean.getType())) {
+                serverNodeBeanList.add(serverNodeBean);
+            }
+        }
+
+        // return
+        return serverNodeBeanList;
     }
 
+    /**
+     * add a server node to the cache
+     *
+     * @param serverNodeBean                the node to be added
+     * @throws RegistryException            if the node is already registered
+     */
     @Override
     public void addServerNode(ServerNodeBean serverNodeBean) throws RegistryException {
-
+        this.registryRepository.save(serverNodeBean);
     }
 
     @Override
