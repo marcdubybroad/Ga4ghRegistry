@@ -95,9 +95,30 @@ public class JpaRegistryDAO implements RegistryDAO {
         }
     }
 
+    /**
+     * delete a server node from the cache
+     *
+     * @param serverNodeBean                the server node to delete
+     * @throws RegistryException            if the server node is not registered
+     */
     @Override
     public void deleteServerNode(ServerNodeBean serverNodeBean) throws RegistryException {
+        // local variables
+        ServerNodeBean dbBean = null;
 
+        // find the bean
+        dbBean = this.registryRepository.findByUrl(serverNodeBean.getUrl());
+
+        // check that not null
+        if (dbBean == null) {
+            String message = "Server node with url: " + serverNodeBean.getUrl() + " already not registered so cannot be deleted";
+            this.daoLog.error(message);
+            throw new RegistryException(message);
+
+        } else {
+            // delete
+            this.registryRepository.delete(dbBean);
+        }
     }
 
     @Override

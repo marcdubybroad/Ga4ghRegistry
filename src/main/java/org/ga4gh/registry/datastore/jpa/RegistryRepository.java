@@ -11,4 +11,11 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface RegistryRepository extends CrudRepository<ServerNodeBean, Long> {
+
+    /**
+     * find a server node by its url
+     *
+     * @return
+     */
+    public ServerNodeBean findByUrl(String url);
 }
