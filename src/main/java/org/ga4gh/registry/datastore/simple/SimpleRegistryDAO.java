@@ -5,6 +5,7 @@ import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.datastore.RegistryDAO;
 import org.ga4gh.registry.util.RegistryConstants;
 import org.ga4gh.registry.util.RegistryException;
+import org.ga4gh.registry.util.ServerNodeVerifier;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
@@ -24,6 +25,7 @@ import java.util.Map;
 public class SimpleRegistryDAO implements RegistryDAO {
     // instance variables
     private final Logger daoLog = Logger.getLogger(this.getClass().getName());
+    private ServerNodeVerifier serverNodeVerifier = new ServerNodeVerifier();
 
     // cached map; use hashtable for synchronization
     private Map<String, ServerNodeBean> serverMap = new Hashtable<String, ServerNodeBean>();
@@ -147,26 +149,6 @@ public class SimpleRegistryDAO implements RegistryDAO {
      * @throws RegistryException
      */
     protected void verifyNode(ServerNodeBean serverNodeBean) throws RegistryException {
-        // make sure url is not null
-        if (serverNodeBean.getUrl() == null) {
-            String message = "Got server node with null url";
-            this.daoLog.error(message);
-            throw new RegistryException(message);
-        }
-
-        // make sure type is not null
-        if (serverNodeBean.getType() == null) {
-            String message = "Got server node with null server node type";
-            this.daoLog.error(message);
-            throw new RegistryException(message);
-        }
-
-        // make sure type is correct
-        if (!RegistryConstants.RegistryType.TYPE_LIST.contains(serverNodeBean.getType())) {
-            String message = "Got server node with incorrect server node type: " + serverNodeBean.getType();
-            this.daoLog.error(message);
-            throw new RegistryException(message);
-        }
+        this.serverNodeVerifier.verifyNode(serverNodeBean);
     }
-
 }

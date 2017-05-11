@@ -4,6 +4,7 @@ import org.apache.log4j.Logger;
 import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.datastore.RegistryDAO;
 import org.ga4gh.registry.util.RegistryException;
+import org.ga4gh.registry.util.ServerNodeVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
@@ -21,6 +22,7 @@ import java.util.List;
 public class JpaRegistryDAO implements RegistryDAO {
     // instance variables
     private final Logger daoLog = Logger.getLogger(this.getClass().getName());
+    private ServerNodeVerifier serverNodeVerifier = new ServerNodeVerifier();
 
     @Autowired
     private RegistryRepository registryRepository;
@@ -85,6 +87,9 @@ public class JpaRegistryDAO implements RegistryDAO {
      */
     @Override
     public void addServerNode(ServerNodeBean serverNodeBean) throws RegistryException {
+        // verify the server node
+        this.verifyNode(serverNodeBean);
+
         try {
             this.registryRepository.save(serverNodeBean);
 
@@ -106,6 +111,9 @@ public class JpaRegistryDAO implements RegistryDAO {
         // local variables
         ServerNodeBean dbBean = null;
 
+        // verify the server node
+        this.verifyNode(serverNodeBean);
+
         // find the bean
         dbBean = this.registryRepository.findByUrl(serverNodeBean.getUrl());
 
@@ -121,8 +129,43 @@ public class JpaRegistryDAO implements RegistryDAO {
         }
     }
 
+    /**
+     * update the server node
+     *
+     * @param serverNodeBean                the server node to update
+     * @throws RegistryException            if the server node is npt registered
+     */
     @Override
     public void updateServerNode(ServerNodeBean serverNodeBean) throws RegistryException {
+        // local variables
+        ServerNodeBean dbBean = null;
 
+        // verify the server node
+        this.verifyNode(serverNodeBean);
+
+        // find the bean
+        dbBean = this.registryRepository.findByUrl(serverNodeBean.getUrl());
+
+        // check that not null
+        if (dbBean == null) {
+            String message = "Server node with url: " + serverNodeBean.getUrl() + " already not registered so cannot be updated";
+            this.daoLog.error(message);
+            throw new RegistryException(message);
+
+        } else {
+            // save
+            dbBean.setType(serverNodeBean.getType());
+            this.registryRepository.save(dbBean);
+        }
+    }
+
+    /**
+     * method to verify server node entries
+     *
+     * @param serverNodeBean
+     * @throws RegistryException
+     */
+    protected void verifyNode(ServerNodeBean serverNodeBean) throws RegistryException {
+        this.serverNodeVerifier.verifyNode(serverNodeBean);
     }
 }
