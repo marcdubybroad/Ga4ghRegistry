@@ -1,15 +1,18 @@
 
+-- NOTE: this file's contents are not really needed if you keep the JPA setting in the application.properties ddl-auto as 'update'
+
 -- drop any tables already created
 drop table if exists registry_server_node;
 
 
 -- create the server node table
-create table registry_server_node (
-    server_node_id bigint(20) not null primary key,
-    web_name varchar(1000) not null,
-    url varchar(1000) not null,
-    type varchar(400) not null,
-    date_created timestamp,
-    last_updated datetime,
-    version bigint(20)
-);
+CREATE TABLE `registry_server_node` (
+  `id` bigint(20) NOT NULL AUTO_INCREMENT,
+  `last_updated` timestamp NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `type` varchar(255) DEFAULT NULL,
+  `url` varchar(255) DEFAULT NULL,
+  `version` bigint(20) DEFAULT NULL,
+  `web_name` varchar(255) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `UK_7p583m1ibiycob2qilra9nrd0` (`url`)
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
