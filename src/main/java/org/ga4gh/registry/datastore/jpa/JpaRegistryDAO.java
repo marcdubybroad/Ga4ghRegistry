@@ -1,34 +1,31 @@
-package org.ga4gh.registry.datastore.simple;
+package org.ga4gh.registry.datastore.jpa;
 
 import org.apache.log4j.Logger;
 import org.ga4gh.registry.bean.ServerNodeBean;
 import org.ga4gh.registry.datastore.RegistryDAO;
-import org.ga4gh.registry.util.RegistryConstants;
 import org.ga4gh.registry.util.RegistryException;
 import org.ga4gh.registry.util.ServerNodeVerifier;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
-import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 /**
- * Simple implementation of a registry DAO
- * <br/>
- * To use as a refernce
+ * Class to use JPA to retrieve registrty information from the database
  *
- * Created by mduby on 4/5/17.
+ * Created by mduby on 5/10/17.
  */
 @Component
-public class SimpleRegistryDAO implements RegistryDAO {
+public class JpaRegistryDAO implements RegistryDAO {
     // instance variables
     private final Logger daoLog = Logger.getLogger(this.getClass().getName());
     private ServerNodeVerifier serverNodeVerifier = new ServerNodeVerifier();
 
-    // cached map; use hashtable for synchronization
-    private Map<String, ServerNodeBean> serverMap = new Hashtable<String, ServerNodeBean>();
+    @Autowired
+    private RegistryRepository registryRepository;
 
     /**
      * list all the stored server nodes
@@ -38,7 +35,20 @@ public class SimpleRegistryDAO implements RegistryDAO {
      */
     @Override
     public List<ServerNodeBean> getAllServerNodes() throws RegistryException {
-        return new ArrayList<ServerNodeBean>(this.serverMap.values());
+        // local variables
+        List<ServerNodeBean> serverNodeBeanList = new ArrayList<ServerNodeBean>();
+        Iterator<ServerNodeBean> serverNodeBeanIterator = null;
+
+        // get the iteratore from the repository
+        serverNodeBeanIterator = this.registryRepository.findAll().iterator();
+
+        // populate the list
+        while (serverNodeBeanIterator.hasNext()) {
+            serverNodeBeanList.add(serverNodeBeanIterator.next());
+        }
+
+        // return
+        return serverNodeBeanList;
     }
 
     /**
@@ -52,23 +62,16 @@ public class SimpleRegistryDAO implements RegistryDAO {
     public List<ServerNodeBean> getAllServerNodesOfType(String type) throws RegistryException {
         // local variables
         List<ServerNodeBean> serverNodeBeanList = new ArrayList<ServerNodeBean>();
+        Iterator<ServerNodeBean> serverNodeBeanIterator = null;
 
-        // make sure the type is valid
-        if (!RegistryConstants.RegistryType.TYPE_LIST.contains(type)) {
-            String message = "Got request for incorrect server node type: " + type;
-            this.daoLog.error(message);
-            throw new RegistryException(message);
-        }
+        // get the iteratore from the repository
+        serverNodeBeanIterator = this.registryRepository.findAll().iterator();
 
-        // get an iterator
-        Iterator<ServerNodeBean> iterator = this.serverMap.values().iterator();
-
-        // for each node, check the type
-        while (iterator.hasNext()) {
-            ServerNodeBean bean = iterator.next();
-
-            if (type.equalsIgnoreCase(bean.getType())) {
-                serverNodeBeanList.add(bean);
+        // populate the list
+        while (serverNodeBeanIterator.hasNext()) {
+            ServerNodeBean serverNodeBean = serverNodeBeanIterator.next();
+            if (type.equalsIgnoreCase(serverNodeBean.getType())) {
+                serverNodeBeanList.add(serverNodeBean);
             }
         }
 
@@ -87,15 +90,14 @@ public class SimpleRegistryDAO implements RegistryDAO {
         // verify the server node
         this.verifyNode(serverNodeBean);
 
-        // make sure not already registered
-        if (this.serverMap.get(serverNodeBean.getUrl()) != null) {
-            String message = "Server node with url: " + serverNodeBean.getUrl() + " already is registered";
+        try {
+            this.registryRepository.save(serverNodeBean);
+
+        } catch (DataIntegrityViolationException exception) {
+            String message = "Server node with url: " + serverNodeBean.getUrl() + " already registered so cannot be created";
             this.daoLog.error(message);
             throw new RegistryException(message);
         }
-
-        // add to the map
-        this.serverMap.put(serverNodeBean.getUrl(), serverNodeBean);
     }
 
     /**
@@ -106,18 +108,25 @@ public class SimpleRegistryDAO implements RegistryDAO {
      */
     @Override
     public void deleteServerNode(ServerNodeBean serverNodeBean) throws RegistryException {
+        // local variables
+        ServerNodeBean dbBean = null;
+
         // verify the server node
         this.verifyNode(serverNodeBean);
 
-        // make sure not already registered
-        if (this.serverMap.get(serverNodeBean.getUrl()) == null) {
+        // find the bean
+        dbBean = this.registryRepository.findByUrl(serverNodeBean.getUrl());
+
+        // check that not null
+        if (dbBean == null) {
             String message = "Server node with url: " + serverNodeBean.getUrl() + " already not registered so cannot be deleted";
             this.daoLog.error(message);
             throw new RegistryException(message);
-        }
 
-        // add to the map
-        this.serverMap.remove(serverNodeBean.getUrl());
+        } else {
+            // delete
+            this.registryRepository.delete(dbBean);
+        }
     }
 
     /**
@@ -128,18 +137,26 @@ public class SimpleRegistryDAO implements RegistryDAO {
      */
     @Override
     public void updateServerNode(ServerNodeBean serverNodeBean) throws RegistryException {
+        // local variables
+        ServerNodeBean dbBean = null;
+
         // verify the server node
         this.verifyNode(serverNodeBean);
 
-        // make sure not already registered
-        if (this.serverMap.get(serverNodeBean.getUrl()) == null) {
+        // find the bean
+        dbBean = this.registryRepository.findByUrl(serverNodeBean.getUrl());
+
+        // check that not null
+        if (dbBean == null) {
             String message = "Server node with url: " + serverNodeBean.getUrl() + " already not registered so cannot be updated";
             this.daoLog.error(message);
             throw new RegistryException(message);
-        }
 
-        // add to the map
-        this.serverMap.put(serverNodeBean.getUrl(), serverNodeBean);
+        } else {
+            // save
+            dbBean.setType(serverNodeBean.getType());
+            this.registryRepository.save(dbBean);
+        }
     }
 
     /**
